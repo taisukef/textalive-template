@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+
+
+<script type="module">
+import base from "./jigaku.mjs";
+import { DGraphic } from "./DGraphic.js";
+import { DUtil } from "./DUtil.js";
+const util = new DUtil();
+
+// http://localhost:8888/fukunojigjp/app/textalive-template/
+
+window.onload = () => {
+    const canvas = base.createFullCanvas();
+    const dg = new DGraphic();
+    canvas.draw = (g, w, h) => {
+      g.beginFill = (color) => {
+        g.setColor(color);
+        g.beginPath();
+      };
+      g.endFill = () => {
+        g.fill();
+      };
+      g.setStrokeStyle = (lw) => {
+        g.lineWidth = lw;
+      };
+      g.beginStroke = (color) => {
+        g.setColor(color);
+        g.beginPath();
+      };
+      g.endStroke = () => {
+        g.stroke();
+      }
+
+      const t = (new Date().getTime() % 1000) / 1000;
+      const s = Math.sin(t * Math.PI * 2) / 2 + .5;
+      const seed = Math.floor(new Date().getTime() / 1000);
+      const colors = [];
+      for (let i = 0; i < 3; i++) {
+        const s = 80;
+        const l = 70;
+        colors.push(util.hslToRgb(util.random(seed + i) * 360, s, l));
+      }
+      
+      g.setColor(255, 255, 255);
+      g.fillRect(0, 0, w, h);
+
+      dg.drawBg(g, seed, seed, s, colors[0], false, "#fff", w, h);
+      // g.curveTo(width * (1 - p2), height * 0.5, width * (1 - p3), height);
+   
+      // g.setColor(255, 0, 0);
+      // g.drawLine(0, 0, w, h);
+      
+      
+      const n = [];
+      const xy = [];
+      for (let i = 0; i < 3; i++) {
+        n.push(Math.floor(util.random(seed + i) * 7) + 3);
+      }
+      dg.drawDonut(g, w / 3, h / 2, w / 6, w / 8, n[0], 0, colors[1], 0, s);
+      dg.drawFlower(g, w / 3 * 2, h / 2, w / 6, w / 8, n[1], n[2], 0, colors[2], 0, 1, s * 2, s);
+    };
+    const f = () => {
+      canvas.redraw();
+      window.requestAnimationFrame(f);
+    };
+    f();
+};
+
+</script>
+
+</head>
+</html>
